@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCC Minha Saúde - API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+        
+        .btn-test {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            margin-bottom: 10px;
+        }
+        
+        .btn-test:hover {
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        
+        .alert-success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        
+        .alert-info {
+            background: #e3f2fd;
+            color: #1976d2;
+            border: 1px solid #bbdefb;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .info-box {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        
+        .info-box h3 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+        
+        small {
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .endpoint-info {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 TCC Minha Saúde</h1>
+        <p class="subtitle">API de Registro de Usuários</p>
+        
+        <div class="info-box">
+            <h3>✅ Laravel Instalado com Sucesso!</h3>
+            <p>Sua API está funcionando. Teste o endpoint de registro abaixo.</p>
+        </div>
+        
+        <div class="endpoint-info">
+            <strong>Endpoint:</strong> POST /api/auth/google/register<br>
+            <strong>URL:</strong> http://localhost/TCC-Minha_Saude-API/minha-api/public/api/auth/google/register
+        </div>
+        
+        <button type="button" class="btn btn-test" onclick="testarAPI()">
+            🧪 Testar Conexão da API
+        </button>
+        
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Processando...</p>
+        </div>
+        
+        <div id="error-message" class="alert alert-error" style="display: none;"></div>
+        <div id="success-message" class="alert alert-success" style="display: none;"></div>
+        <div id="info-message" class="alert alert-info" style="display: none;"></div>
+        
+        <form id="registration-form">
+            <div class="form-group">
+                <label for="cpf">📄 CPF:</label>
+                <input type="text" id="cpf" name="cpf" placeholder="12345678901" maxlength="11" required>
+                <small>Digite apenas números (11 dígitos)</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="nome_completo">👤 Nome Completo:</label>
+                <input type="text" id="nome_completo" name="nome_completo" placeholder="João Silva Santos" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="data_nascimento">🎂 Data de Nascimento:</label>
+                <input type="date" id="data_nascimento" name="data_nascimento" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="codigo_telefone">🌍 Código do País:</label>
+                <input type="text" id="codigo_telefone" name="codigo_telefone" value="+55" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="telefone">📱 Telefone:</label>
+                <input type="text" id="telefone" name="telefone" placeholder="11999999999" required>
+                <small>Digite apenas números (DDD + número)</small>
+            </div>
+            
+            <button type="button" class="btn" onclick="registrarUsuario()">
+                ✅ Registrar Usuário
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost/TCC-Minha_Saude-API/minha-api/public/api';
+        
+        document.getElementById('data_nascimento').max = new Date().toISOString().split('T')[0];
+        
+        async function testarAPI() {
+            mostrarLoading(true);
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/test`);
+                const resultado = await response.json();
+                
+                if (response.ok) {
+                    mostrarInfo(`
+                        🎉 <strong>API Funcionando!</strong><br>
+                        <strong>Mensagem:</strong> ${resultado.message}<br>
+                        <strong>Versão:</strong> ${resultado.version}<br>
+                        <strong>Timestamp:</strong> ${new Date(resultado.timestamp).toLocaleString()}
+                    `);
+                } else {
+                    mostrarErro('❌ Erro na API: ' + resultado.message);
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                mostrarErro('❌ Erro de conexão. Verifique se o XAMPP está rodando!');
+            } finally {
+                mostrarLoading(false);
+            }
+        }
+        
+        async function registrarUsuario() {
+            if (!validarFormulario()) {
+                return;
+            }
+            
+            mostrarLoading(true);
+            
+            const dados = {
+                cpf: document.getElementById('cpf').value,
+                nome_completo: document.getElementById('nome_completo').value,
+                data_nascimento: document.getElementById('data_nascimento').value,
+                telefone: document.getElementById('telefone').value,
+                codigo_telefone: document.getElementById('codigo_telefone').value,
+                oauth_token: 'fake_token_' + Date.now()
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/google/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(dados)
+                });
+                
+                const resultado = await response.json();
+                
+                if (resultado.success) {
+                    mostrarSucesso(`
+                        🎉 <strong>Usuário registrado com sucesso!</strong><br>
+                        <strong>ID:</strong> ${resultado.data.user.id}<br>
+                        <strong>Nome:</strong> ${resultado.data.user.nome_completo}<br>
+                        <strong>Email:</strong> ${resultado.data.user.email}<br>
+                        <strong>Token:</strong> ${resultado.data.session_token.substring(0, 20)}...
+                    `);
+                    
+                    document.getElementById('registration-form').reset();
+                    console.log('Resposta completa:', resultado);
+                } else {
+                    mostrarErro('❌ ' + (resultado.message || 'Erro ao registrar usuário'));
+                    if (resultado.errors) {
+                        console.log('Erros:', resultado.errors);
+                    }
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                mostrarErro('❌ Erro de conexão. Verifique se o XAMPP está rodando!');
+            } finally {
+                mostrarLoading(false);
+            }
+        }
+        
+        function validarFormulario() {
+            const cpf = document.getElementById('cpf').value;
+            const nome = document.getElementById('nome_completo').value;
+            const dataNascimento = document.getElementById('data_nascimento').value;
+            const telefone = document.getElementById('telefone').value;
+            
+            if (!cpf || !nome || !dataNascimento || !telefone) {
+                mostrarErro('❌ Por favor, preencha todos os campos');
+                return false;
+            }
+            
+            if (cpf.length !== 11 || !/^\d+$/.test(cpf)) {
+                mostrarErro('❌ CPF deve ter exatamente 11 números');
+                return false;
+            }
+            
+            if (!/^\d+$/.test(telefone)) {
+                mostrarErro('❌ Telefone deve conter apenas números');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function mostrarErro(mensagem) {
+            limparMensagens();
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.innerHTML = mensagem;
+            errorDiv.style.display = 'block';
+        }
+        
+        function mostrarSucesso(mensagem) {
+            limparMensagens();
+            const successDiv = document.getElementById('success-message');
+            successDiv.innerHTML = mensagem;
+            successDiv.style.display = 'block';
+        }
+        
+        function mostrarInfo(mensagem) {
+            limparMensagens();
+            const infoDiv = document.getElementById('info-message');
+            infoDiv.innerHTML = mensagem;
+            infoDiv.style.display = 'block';
+        }
+        
+        function limparMensagens() {
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
+            document.getElementById('info-message').style.display = 'none';
+        }
+        
+        function mostrarLoading(mostrar) {
+            const loadingDiv = document.getElementById('loading');
+            const form = document.getElementById('registration-form');
+            
+            if (mostrar) {
+                loadingDiv.style.display = 'block';
+                form.style.display = 'none';
+            } else {
+                loadingDiv.style.display = 'none';
+                form.style.display = 'block';
+            }
+        }
+        
+        // Máscara para CPF
+        document.getElementById('cpf').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            e.target.value = value.slice(0, 11);
+        });
+        
+        // Máscara para telefone
+        document.getElementById('telefone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            e.target.value = value.slice(0, 11);
+        });
+    </script>
+</body>
+</html>
