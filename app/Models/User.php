@@ -19,9 +19,14 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'cpf',
         'name',
+        'data_nascimento',
+        'telefone',
         'email',
-        'password',
+        'metodo_autenticacao',
+        'google_id',
+        'status_conta',
     ];
 
     /**
@@ -44,6 +49,22 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'data_nascimento' => 'date',
         ];
+    }
+
+    public function documentos()
+    {
+        return $this->hasMany(Documento::class);
+    }
+
+    public function exports()
+    {
+        return $this->hasMany(Export::class);
+    }
+
+    public function compartilhamentos()
+    {
+        return $this->hasMany(Compartilhamento::class);
     }
 }

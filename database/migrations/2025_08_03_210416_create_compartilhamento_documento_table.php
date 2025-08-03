@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('documento_compartilhamento', function (Blueprint $table) {
+        Schema::create('compartilhamento_documento', function (Blueprint $table) {
             $table->foreignUuid('documento_id')
                 ->constrained('documentos')
                 ->cascadeOnDelete();
@@ -26,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('documento_compartilhamento');
+        Schema::dropIfExists('compartilhamento_documento');
     }
 };
